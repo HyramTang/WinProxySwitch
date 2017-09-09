@@ -27,82 +27,63 @@ namespace WinProxySwitch
             Microsoft.Win32.RegistryKey rk = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Internet Settings", true);
 
             //判断代理状态
-            if (rk.GetValue("ProxyEnable").Equals(1))
+            if (rk.GetValue("ProxyEnable").Equals(1))//开启状态
             {
-                Console.WriteLine(string.Format("代理处于[开启]状态，代理地址为：{0}\t\n", rk.GetValue("ProxyServer")));
-                Console.WriteLine("请按数字键选择：\t\n\t\n[1].关闭\t\n\t\n[2].更改Proxy");
-                Console.WriteLine("\n");
+                Console.WriteLine(string.Format("代理处于[开启]状态，代理地址为：{0}\n", rk.GetValue("ProxyServer")));
+                Console.WriteLine("请按数字键选择：\n\n[1].关闭\n\n[2].修改代理\n");
 
-                if (Console.ReadKey().KeyChar.Equals('1'))
+                if (Console.ReadKey(true).KeyChar.Equals('1'))
                 {
                     rk.SetValue("ProxyEnable", 0);
-                    Console.WriteLine("开启成功！");
+                    Console.WriteLine("代理已[关闭]!");
                 }
                 else
                 {
+                    Console.Write("请输入代理地址：");
                     rk.SetValue("ProxyServer", Console.ReadLine());
+                    Console.WriteLine(string.Format("\n代理已[开启]，代理已修改为:{0}", rk.GetValue("ProxyServer")));
                 }
             }
-            else
+            else//关闭状态
             {
                 var proxy = rk.GetValue("ProxyServer").ToString();
-                Console.WriteLine(string.Format("代理处于[关闭]状态，代理地址为：{0}\t\n", proxy));
+                Console.WriteLine(string.Format("代理处于[关闭]状态，代理地址为：{0}\n", proxy));
 
                 if (string.IsNullOrEmpty(proxy))
                 {
-                    Console.Write("请添加Proxy：");
+                    Console.Write("请输入代理地址：");
                     rk.SetValue("ProxyServer", Console.ReadLine());
+                    rk.SetValue("ProxyEnable", 1);
+                    Console.WriteLine(string.Format("\n代理已[开启]，代理已修改为:{0}", rk.GetValue("ProxyServer")));
                 }
                 else
                 {
-                    Console.WriteLine("请按数字键选择：\t\n\t\n[1].开启\t\n\t\n[2].修改Proxy");
-                    if (Console.ReadKey().KeyChar.Equals('1'))
+                    Console.WriteLine("请按数字键选择：\n\n[1].开启\n\n[2].修改代理\n");
+                    if (Console.ReadKey(true).KeyChar.Equals('1'))
                     {
                         rk.SetValue("ProxyEnable", 1);
+                        Console.WriteLine("代理已[开启]!");
                     }
                     else
                     {
-                        Console.Write("请输入Proxy：");
+                        Console.Write("请输入代理地址：");
                         rk.SetValue("ProxyServer", Console.ReadLine());
+                        rk.SetValue("ProxyEnable", 1);
+                        Console.WriteLine(string.Format("\n代理已[开启]，代理已修改为:{0}", rk.GetValue("ProxyServer")));
                     }
                 }
             }
 
+            //刷新注册表
             rk.Flush();
             rk.Close();
+            //刷新IE设置
             InternetSetOption(0, 39, IntPtr.Zero, 0);
-            Console.ReadKey();
 
+            Console.WriteLine("\n请按任意键退出程序！");
+            Console.ReadKey(true);
 
-            //设置代理可用 
-            //rk.SetValue("ProxyEnable", 1);
-            //设置代理IP和端口 
-            //rk.SetValue("ProxyServer", ConfigurationManager.ConnectionStrings["ProxyServer"].ConnectionString);
-
-
-
-
-
-
-
-
-
-
-
-            //if (NetWork(ConfigurationManager.ConnectionStrings["LinkName"].ConnectionString, "启用"))
-            //{
-            //    txtMessage.Text += ConfigurationManager.ConnectionStrings["LinkName"].ConnectionString + "--启用成功！" + "\r\n";
-            //}
-
-
-            //txtMessage.Text += "IE自动脚本配置成功！" + "\r\n";
-
-
-
-            //txtMessage.Text += "IE代理服务器配置成功！" + "\r\n";
-            //rk.Flush();
-            //rk.Close();
-            //InternetSetOption(0, 39, IntPtr.Zero, 0);
+            return;
         }
     }
 }

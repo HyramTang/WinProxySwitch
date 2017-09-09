@@ -46,7 +46,7 @@ namespace WinProxySwitch
             }
             else//关闭状态
             {
-                var proxy = rk.GetValue("ProxyServer").ToString();
+                var proxy = (string)rk.GetValue("ProxyServer");
                 Console.WriteLine(string.Format("代理处于[关闭]状态，代理地址为：{0}\n", proxy));
 
                 if (string.IsNullOrEmpty(proxy))
